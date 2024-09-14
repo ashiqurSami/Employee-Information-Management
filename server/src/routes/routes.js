@@ -1,5 +1,5 @@
 const express = require("express");
-const { addEmployee } = require("../controllers/controller");
+const { addEmployee, getEmployee } = require("../controllers/controller");
 const { multerSetup } = require("../utility/multerSetup");
 const router = express.Router();
 
@@ -46,14 +46,7 @@ const upload=multerSetup()
 // router.get("/", getEmployees);
 
 // // GET a single employee
-// router.get("/:id", async (req, res) => {
-//   try {
-//     const employee = await Employee.findById(req.params.id);
-//     res.status(200).json(employee);
-//   } catch (err) {
-//     res.status(500).json({ error: "Employee not found" });
-//   }
-// });
+router.get("/:id", getEmployee);
 
 // POST: Add a new employee
 router.post("/add-employee", upload.single("photo"), addEmployee);
