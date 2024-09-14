@@ -9,7 +9,9 @@ const employeeRoutes=require('./src/routes/routes')
 const app= new express();
 dotEnv.config();
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173', // Frontend address
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
