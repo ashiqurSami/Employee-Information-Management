@@ -51,6 +51,72 @@ exports.deleteEmployee = async (req, res) => {
     await Employee.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "Employee deleted successfully" });
   } catch (err) {
-    res.status(500).json({ error: "Error deleting employee" });
+    res.status(400).json({ error: "Error deleting employee" });
+  }
+};
+
+exports.getEmployees = async (req, res) => { 
+  const { page = 1, limit = 10, sortBy = 'fullname', order = 'asc', searchName = '', searchEmail = '', searchMobile = '', searchDob = '' } = req.query;
+  
+  const sort = { [sortBy]: order === 'asc' ? 1 : -1 };
+
+  // Build dynamic search query
+  const searchQuery = {
+    $and: []
+  };
+
+  // Partial search for fullname
+  if (searchName) {
+    searchQuery.$and.push({
+      fullname: { $regex: searchName, $options: 'i' }  // Case-insensitive partial search on fullname
+    });
+  }
+
+  // Partial search for email
+  if (searchEmail) {
+    searchQuery.$and.push({
+      email: { $regex: searchEmail, $options: 'i' }  // Case-insensitive partial search on email
+    });
+  }
+
+  // Exact search for mobile
+  if (searchMobile) {
+    searchQuery.$and.push({
+      mobile: searchMobile  // Exact match for mobile
+    });
+  }
+
+  // Exact search for date of birth (ISO format)
+  if (searchDob) {
+    searchQuery.$and.push({
+      dob: searchDob  // Exact match for dob
+    });
+  }
+
+  // If there are no search parameters, remove the $and array to avoid unnecessary filtering
+  if (!searchQuery.$and.length) {
+    delete searchQuery.$and;
+  }
+
+  try {
+    // Fetch employees with pagination, sorting, and searching
+    const employees = await Employee.find(searchQuery)
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .sort(sort);
+
+    // Get total count for pagination
+    const count = await Employee.countDocuments(searchQuery);
+
+    res.status(200).json({
+      data: employees,
+      pagination: {
+        total: count,
+        page: parseInt(page),
+        limit: parseInt(limit)
+      }
+    });
+  } catch (err) {
+    res.status(400).json({ error: 'Something went wrong' });
   }
 };
