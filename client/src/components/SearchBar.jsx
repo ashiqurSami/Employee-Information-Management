@@ -3,7 +3,7 @@ import React from 'react';
 const SearchBar = ({ onSearchChange }) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    onSearchChange(name, value);
+    onSearchChange(name, value);  // Pass search input back to EmployeeList
   };
 
   return (
