@@ -1,5 +1,5 @@
 const express = require("express");
-const { addEmployee, getEmployee } = require("../controllers/controller");
+const { addEmployee, getEmployee, editEmployee } = require("../controllers/controller");
 const { multerSetup } = require("../utility/multerSetup");
 const router = express.Router();
 
@@ -51,22 +51,8 @@ router.get("/:id", getEmployee);
 // POST: Add a new employee
 router.post("/add-employee", upload.single("photo"), addEmployee);
 
-// // PUT: Edit employee details
-// router.put("/:id", upload.single("photo"), async (req, res) => {
-//   const { firstName, lastName, email, mobile, dob } = req.body;
-//   const photo = req.file ? req.file.path : null;
-
-//   try {
-//     const employee = await Employee.findByIdAndUpdate(
-//       req.params.id,
-//       { firstName, lastName, email, mobile, dob, photo },
-//       { new: true }
-//     );
-//     res.status(200).json(employee);
-//   } catch (err) {
-//     res.status(400).json({ error: "Error updating employee" });
-//   }
-// });
+// PUT: Edit employee details
+router.put("/:id", upload.single("photo"), editEmployee);
 
 // // DELETE: Delete an employee
 // router.delete("/:id", async (req, res) => {

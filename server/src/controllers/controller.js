@@ -28,3 +28,21 @@ exports.getEmployee = async (req, res) => {
     res.status(400).json({ error: err.toString() });
   }
 };
+
+exports.editEmployee = async (req, res) => {
+    const { fullname, email, mobile, dob } = req.body;
+    const photo = req.file ? req.file.path : null;
+  
+    try {
+      const employee = await Employee.findByIdAndUpdate(
+        req.params.id,
+        { fullname, email, mobile, dob, photo },
+        { new: true }
+      );
+      res.status(200).json(employee);
+    } catch (err) {
+      console.log(err.toString());
+      res.status(400).json({ error: err.toString() });
+    }
+  
+}
