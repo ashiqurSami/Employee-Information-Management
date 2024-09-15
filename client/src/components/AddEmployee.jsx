@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import service from '../service/service.js';
 import toast from "react-hot-toast";
-import Resizer from 'react-image-file-resizer'; // Import the resizer library
+import Resizer from 'react-image-file-resizer'; 
 
 const AddEmployee = () => {
   const [employee, setEmployee] = useState({

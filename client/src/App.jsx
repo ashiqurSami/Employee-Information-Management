@@ -11,10 +11,10 @@ function App() {
     <Router>
       <div className="container-fluid">
         <div className="row">
-          <div className="col-3">
+          <div className="col-2">
             <Navbar /> 
           </div>
-          <div className="col-9">
+          <div className="col-10">
             <Routes>
               <Route path="/add-employee" element={<AddEmployee />} />
               <Route path="/" element={<EmployeeList />} />

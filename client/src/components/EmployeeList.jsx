@@ -7,7 +7,8 @@ import SearchBar from './SearchBar';
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
   const [page, setPage] = useState(1);
-  const [limit] = useState(10); 
+  const [limit, setLimit] = useState(10);
+  const [inputLimit, setInputLimit] = useState('10')
   const [totalPages, setTotalPages] = useState(1); 
   const [search, setSearch] = useState({
     name: '',
@@ -20,7 +21,7 @@ const EmployeeList = () => {
 
   useEffect(() => {
     fetchEmployees();
-  }, [page, sortBy, order, search]);
+  }, [page, limit, sortBy, order, search]); 
 
   const fetchEmployees = async () => {
     try {
@@ -40,7 +41,6 @@ const EmployeeList = () => {
       const { data, pagination } = response.data; 
       setEmployees(data); 
 
-      // Calculate total pages based on total records and limit per page
       const calculatedTotalPages = Math.ceil(pagination.total / pagination.limit);
       setTotalPages(calculatedTotalPages); 
 
@@ -50,21 +50,25 @@ const EmployeeList = () => {
   };
 
 
-  const deleteEmployee = async (id) => {
-    try {
-      await axios.delete(`http://localhost:5000/api/employee/${id}`);
-      setEmployees(employees.filter((employee) => employee._id !== id));
-    } catch (error) {
-      console.error('Error deleting employee:', error);
-    }
-  };
-
-  // Handle search input changes from SearchBar
   const handleSearchChange = (name, value) => {
     setSearch((prev) => ({
       ...prev,
       [name]: value
     }));
+  };
+
+
+  const handleInputLimitChange = (e) => {
+    const value = e.target.value;
+    setInputLimit(value)
+
+    if (value === '' || parseInt(value) < 1) {
+      setLimit(1); 
+    } else {
+      setLimit(parseInt(value)); 
+    }
+
+    setPage(1); 
   };
 
   return (
@@ -97,13 +101,27 @@ const EmployeeList = () => {
             <EmployeeItem
               key={employee._id}
               employee={employee}
-              onDelete={() => deleteEmployee(employee._id)}  // Pass delete handler
+              onDelete={() => deleteEmployee(employee._id)} 
             />
           ))}
         </tbody>
       </table>
 
-      <Pagination page={page} setPage={setPage} totalPages={totalPages} />
+      <div className="d-flex justify-content-between align-items-center mt-4">
+        <div className="col-md-2">
+          <label htmlFor="limit" className="form-label">Records per page</label>
+          <input
+            type="number"
+            className="form-control"
+            value={inputLimit}  
+            onChange={handleInputLimitChange} 
+            id="limit"
+            placeholder="Records per page"
+            min="1"
+          />
+        </div>
+        <Pagination page={page} setPage={setPage} totalPages={totalPages} />
+      </div>
     </div>
   );
 };
