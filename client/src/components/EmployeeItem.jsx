@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
-import defaultImage from '../assets/default.png'
+import defaultImage from "../assets/default.png";
 
 const EmployeeItem = ({ employee, onDelete }) => {
   const [showModal, setShowModal] = useState(false);
@@ -11,18 +11,15 @@ const EmployeeItem = ({ employee, onDelete }) => {
   const handleCloseModal = () => setShowModal(false);
 
   const handleConfirmDelete = () => {
-    onDelete();
+    onDelete(employee._id); // Pass employee ID here
     setShowModal(false);
   };
 
-  
   const getFileName = (filePath) => {
-    return filePath ? filePath.split('\\').pop() : null;  
+    return filePath ? filePath.split("\\").pop() : null;
   };
 
-  const photoFileName = getFileName(employee.photo);  
-
-  // console.log(photoFileName);  
+  const photoFileName = getFileName(employee.photo);
 
   return (
     <>
@@ -31,10 +28,10 @@ const EmployeeItem = ({ employee, onDelete }) => {
           <img
             src={
               photoFileName
-                ? `http://localhost:5000/uploads/${photoFileName}`  
+                ? `http://localhost:5000/uploads/${photoFileName}`
                 : defaultImage
             }
-            alt="Employee"
+            alt={`Photo of ${employee.fullname}`}
             width="50"
             height="50"
           />

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import EmployeeItem from './EmployeeItem';
 import Pagination from './Pagination';
 import SearchBar from './SearchBar';  
+import service from '../service/service';  // Import the service
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const [inputLimit, setInputLimit] = useState('10')
+  const [inputLimit, setInputLimit] = useState('10');
   const [totalPages, setTotalPages] = useState(1); 
   const [search, setSearch] = useState({
     name: '',
@@ -20,35 +20,34 @@ const EmployeeList = () => {
   const [order, setOrder] = useState('asc');
 
   useEffect(() => {
-    fetchEmployees();
-  }, [page, limit, sortBy, order, search]); 
+    loadEmployees();
+  }, [page, limit, sortBy, order, search]);
 
-  const fetchEmployees = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/employee', {
-        params: {
-          page,
-          limit,
-          sortBy,
-          order,
-          searchName: search.name,
-          searchEmail: search.email,
-          searchMobile: search.mobile.trim(),  
-          searchDob: search.dob.trim()  
-        }
-      });
+  const loadEmployees = async () => {
+    const data = await service.fetchEmployees({
+      page,
+      limit,
+      sortBy,
+      order,
+      search,
+    });
 
-      const { data, pagination } = response.data; 
-      setEmployees(data); 
-
+    if (data) {
+      const { data: employees, pagination } = data;
+      setEmployees(employees);
       const calculatedTotalPages = Math.ceil(pagination.total / pagination.limit);
-      setTotalPages(calculatedTotalPages); 
-
-    } catch (error) {
-      console.error('Error fetching employees:', error);
+      setTotalPages(calculatedTotalPages);
     }
   };
 
+  const deleteEmployee = async (id) => {
+    const success = await service.deleteEmployee(id);
+    if (success) {
+      setEmployees(employees.filter((employee) => employee._id !== id)); 
+    } else {
+      alert('Error deleting employee');
+    }
+  };
 
   const handleSearchChange = (name, value) => {
     setSearch((prev) => ({
@@ -57,10 +56,9 @@ const EmployeeList = () => {
     }));
   };
 
-
   const handleInputLimitChange = (e) => {
     const value = e.target.value;
-    setInputLimit(value)
+    setInputLimit(value);
 
     if (value === '' || parseInt(value) < 1) {
       setLimit(1); 
@@ -101,7 +99,7 @@ const EmployeeList = () => {
             <EmployeeItem
               key={employee._id}
               employee={employee}
-              onDelete={() => deleteEmployee(employee._id)} 
+              onDelete={() => deleteEmployee(employee._id)}  // Pass the delete handler to EmployeeItem
             />
           ))}
         </tbody>

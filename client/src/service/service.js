@@ -1,6 +1,7 @@
 import axios from "axios";
 const baseUrl = "http://localhost:5000/api/employee";
 
+// Add Employee function
 const addEmployee = async (formData) => {
   try {
     let data = await axios.post(`${baseUrl}/add-employee`, formData, {
@@ -14,7 +15,8 @@ const addEmployee = async (formData) => {
   }
 };
 
-const fetchEmployees = async (page,limit,sortBy,order,searchName,searchEmail,searchMobile,searchDob) => {
+// Fetch Employees function
+const fetchEmployees = async ({ page, limit, sortBy, order, search }) => {
   try {
     const response = await axios.get(baseUrl, {
       params: {
@@ -22,21 +24,60 @@ const fetchEmployees = async (page,limit,sortBy,order,searchName,searchEmail,sea
         limit,
         sortBy,
         order,
-        searchName: searchName,
-        searchEmail: searchEmail,
-        searchMobile: searchMobile.trim(), 
-        searchDob: searchDob.trim(), 
+        searchName: search.name,
+        searchEmail: search.email,
+        searchMobile: search.mobile.trim(),
+        searchDob: search.dob.trim(),
       },
     });
-    const { data, pagination } = response.data;
-    return { data, pagination };
+    return response.data;
+  } catch (err) {
+    console.error("Error fetching employees:", err);
+    return null;
+  }
+};
 
-  } catch (error) {
-    console.error("Error fetching employees:", error);
+// Fetch Employee by ID
+const fetchEmployeeById = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/${id}`);
+    return response.data;
+  } catch (err) {
+    console.error(`Error fetching employee with id ${id}:`, err);
+    return null;
+  }
+};
+
+// Update Employee
+const updateEmployee = async (id, formData) => {
+  try {
+    const response = await axios.put(`${baseUrl}/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.status === 200;
+  } catch (err) {
+    console.error(`Error updating employee with id ${id}:`, err);
+    return false;
+  }
+};
+
+// Delete Employee function
+const deleteEmployee = async (id) => {
+  try {
+    const response = await axios.delete(`${baseUrl}/${id}`);
+    return response.status === 200;
+  } catch (err) {
+    console.error(`Error deleting employee with id ${id}:`, err);
+    return false;
   }
 };
 
 export default {
   addEmployee,
- fetchEmployees,
+  fetchEmployees,
+  fetchEmployeeById,  
+  updateEmployee,     
+  deleteEmployee,
 };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import service from '../service/service';  
 
 const EditEmployee = () => {
   const { id } = useParams();
@@ -12,22 +12,23 @@ const EditEmployee = () => {
     dob: '',
     photo: null,
   });
-  const [loading, setLoading] = useState(true); // Loading state to handle data fetching
+  const [loading, setLoading] = useState(true); 
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchEmployee = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/employee/${id}`);
-        const fetchedEmployee = response.data;
-        setEmployee({
-          ...fetchedEmployee,
-          dob: fetchedEmployee.dob ? fetchedEmployee.dob.split('T')[0] : '',  // Format DOB for input
-        });
-        setLoading(false); // Data is fetched, stop loading
+        const fetchedEmployee = await service.fetchEmployeeById(id);  
+        if (fetchedEmployee) {
+          setEmployee({
+            ...fetchedEmployee,
+            dob: fetchedEmployee.dob ? fetchedEmployee.dob.split('T')[0] : '',  
+          });
+        }
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching employee:', error);
-        setLoading(false); // Stop loading even if there's an error
+        setLoading(false); 
       }
     };
     fetchEmployee();
@@ -51,23 +52,22 @@ const EditEmployee = () => {
     formData.append('dob', employee.dob);
 
     if (employee.photo) {
-      formData.append('photo', employee.photo);  // Only append photo if it's changed
+      formData.append('photo', employee.photo);  
     }
 
     try {
-      await axios.put(`http://localhost:5000/api/employee/${id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      toast.success('Employee updated successfully');
-      navigate('/');  
+      const success = await service.updateEmployee(id, formData);  
+      if (success) {
+        toast.success('Employee updated successfully');
+        navigate('/');  // Redirect to employee list
+      } else {
+        toast.error('Error updating employee');
+      }
     } catch (error) {
       console.error('Error updating employee:', error);
       toast.error('Error updating employee');
     }
   };
-
 
   if (loading) {
     return <div className="container mt-4">Loading employee data...</div>;
@@ -104,7 +104,7 @@ const EditEmployee = () => {
         <input 
           type="date" 
           name="dob" 
-          value={employee.dob || ''}  // Ensure DOB is correctly formatted for input
+          value={employee.dob || ''}  
           onChange={handleChange} 
           placeholder="Date of Birth" 
           className="form-control mb-2" 
