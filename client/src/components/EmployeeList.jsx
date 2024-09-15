@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import EmployeeItem from './EmployeeItem';
 import Pagination from './Pagination';
-import SearchBar from './SearchBar';  // Import SearchBar component
+import SearchBar from './SearchBar';  
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
   const [page, setPage] = useState(1);
-  const [limit] = useState(10); // Fixed limit as per project requirement
-  const [totalPages, setTotalPages] = useState(1); // Total pages will be calculated
+  const [limit] = useState(10); 
+  const [totalPages, setTotalPages] = useState(1); 
   const [search, setSearch] = useState({
     name: '',
     email: '',
@@ -22,7 +22,6 @@ const EmployeeList = () => {
     fetchEmployees();
   }, [page, sortBy, order, search]);
 
-  // Function to fetch employees based on search and pagination parameters
   const fetchEmployees = async () => {
     try {
       const response = await axios.get('http://localhost:5000/api/employee', {
@@ -33,24 +32,24 @@ const EmployeeList = () => {
           order,
           searchName: search.name,
           searchEmail: search.email,
-          searchMobile: search.mobile.trim(),  // Ensure exact match for mobile
-          searchDob: search.dob.trim()  // Ensure exact match for DOB
+          searchMobile: search.mobile.trim(),  
+          searchDob: search.dob.trim()  
         }
       });
 
-      const { data, pagination } = response.data; // Destructure pagination from response
-      setEmployees(data); // Set employees for the current page
+      const { data, pagination } = response.data; 
+      setEmployees(data); 
 
       // Calculate total pages based on total records and limit per page
       const calculatedTotalPages = Math.ceil(pagination.total / pagination.limit);
-      setTotalPages(calculatedTotalPages); // Set the calculated total pages
+      setTotalPages(calculatedTotalPages); 
 
     } catch (error) {
       console.error('Error fetching employees:', error);
     }
   };
 
-  // Delete function
+
   const deleteEmployee = async (id) => {
     try {
       await axios.delete(`http://localhost:5000/api/employee/${id}`);
@@ -72,10 +71,8 @@ const EmployeeList = () => {
     <div className="container mt-4">
       <h1>Employee List</h1>
 
-      {/* SearchBar Component */}
-      <SearchBar onSearchChange={handleSearchChange} />
+      <SearchBar onSearchChange={handleSearchChange}/>
 
-      {/* Employee Table */}
       <table className="table table-striped">
         <thead>
           <tr>
@@ -106,7 +103,6 @@ const EmployeeList = () => {
         </tbody>
       </table>
 
-      {/* Pagination Component */}
       <Pagination page={page} setPage={setPage} totalPages={totalPages} />
     </div>
   );
