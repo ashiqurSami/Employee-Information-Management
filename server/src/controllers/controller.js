@@ -55,46 +55,49 @@ exports.deleteEmployee = async (req, res) => {
   }
 };
 
-exports.getEmployees = async (req, res) => { 
-  const { page = 1, limit = 10, sortBy = 'fullname', order = 'asc', searchName = '', searchEmail = '', searchMobile = '', searchDob = '' } = req.query;
+exports.getEmployees = async (req, res) => {
+  const {
+    page = 1,
+    limit = 10,
+    sortBy = "fullname",
+    order = "asc",
+    searchName = "",
+    searchEmail = "",
+    searchMobile = "",
+    searchDob = "",
+  } = req.query;
 
-  console.log('fullname', searchName, " searchEmail", searchEmail);
-  const sort = { [sortBy]: order === 'asc' ? 1 : -1 };
+  console.log("fullname", searchName, " searchEmail", searchEmail);
+  const sort = { [sortBy]: order === "asc" ? 1 : -1 };
 
-  // Build dynamic search query
   const searchQuery = {
-    $and: []
+    $and: [],
   };
 
-  // Partial search for fullname (only if searchName is provided and not empty)
   if (searchName && searchName.trim()) {
     searchQuery.$and.push({
-      fullname: { $regex: searchName.trim(), $options: 'i' }  // Case-insensitive regex for fullname
+      fullname: { $regex: searchName.trim(), $options: "i" }, // Case-insensitive regex for fullname
     });
   }
 
-  // Partial search for email (only if searchEmail is provided and not empty)
   if (searchEmail && searchEmail.trim()) {
     searchQuery.$and.push({
-      email: { $regex: searchEmail.trim(), $options: 'i' }  // Case-insensitive regex for email
+      email: { $regex: searchEmail.trim(), $options: "i" }, // Case-insensitive regex for email
     });
   }
 
-  // Exact search for mobile (only if searchMobile is provided)
   if (searchMobile && searchMobile.trim()) {
     searchQuery.$and.push({
-      mobile: searchMobile.trim()  // Exact match for mobile
+      mobile: searchMobile.trim(), // Exact match for mobile
     });
   }
 
-  // Exact search for date of birth (only if searchDob is provided)
   if (searchDob && searchDob.trim()) {
     try {
-      // Convert dob string to Date object for accurate searching
       const dobDate = new Date(searchDob.trim());
       if (!isNaN(dobDate)) {
         searchQuery.$and.push({
-          dob: searchDob.trim()  // Use the original string here if stored as a string
+          dob: searchDob.trim(),
         });
       }
     } catch (error) {
@@ -102,22 +105,18 @@ exports.getEmployees = async (req, res) => {
     }
   }
 
-  // If there are no search parameters, remove the $and array to avoid unnecessary filtering
   if (!searchQuery.$and.length) {
     delete searchQuery.$and;
   }
 
-  // Log the query to verify
-  console.log('Search Query:', JSON.stringify(searchQuery, null, 2));
+  console.log("Search Query:", JSON.stringify(searchQuery, null, 2));
 
   try {
-    // Fetch employees with pagination, sorting, and searching
     const employees = await Employee.find(searchQuery)
       .limit(parseInt(limit))
       .skip((page - 1) * parseInt(limit))
       .sort(sort);
 
-    // Get total count for pagination
     const count = await Employee.countDocuments(searchQuery);
 
     res.status(200).json({
@@ -125,10 +124,10 @@ exports.getEmployees = async (req, res) => {
       pagination: {
         total: count,
         page: parseInt(page),
-        limit: parseInt(limit)
-      }
+        limit: parseInt(limit),
+      },
     });
   } catch (err) {
-    res.status(400).json({ error: 'Something went wrong' });
+    res.status(400).json({ error: "Something went wrong" });
   }
 };

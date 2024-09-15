@@ -1,6 +1,6 @@
 const express = require("express");
 const { addEmployee, getEmployee, editEmployee, deleteEmployee, getEmployees } = require("../controllers/controller");
-const { multerSetup } = require("../utility/multerSetup");
+const { multerSetup } = require("../middlewares/multerSetup");
 
 const router = express.Router();
 const upload=multerSetup()
