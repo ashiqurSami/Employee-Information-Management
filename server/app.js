@@ -1,10 +1,10 @@
 const express =require('express');
 const mongoose =require('mongoose');
 const bodyParser = require('body-parser');
+const path = require("path");
 const cors = require('cors');
 const dotEnv=require("dotenv");
 const employeeRoutes=require('./src/routes/routes')
-
 
 const app= new express();
 dotEnv.config();
@@ -14,6 +14,12 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+
+
+// Serve static files
+app.use('/uploads', express.static(path.join(__dirname, 'src/uploads')));
+
 
 
 //routes

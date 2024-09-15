@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import defaultImage from '../assets/default.png'
 
 const EmployeeItem = ({ employee, onDelete }) => {
   const [showModal, setShowModal] = useState(false);
@@ -14,15 +15,24 @@ const EmployeeItem = ({ employee, onDelete }) => {
     setShowModal(false);
   };
 
+  
+  const getFileName = (filePath) => {
+    return filePath ? filePath.split('\\').pop() : null;  
+  };
+
+  const photoFileName = getFileName(employee.photo);  
+
+  // console.log(photoFileName);  
+
   return (
     <>
       <tr>
         <td>
           <img
             src={
-              employee.photo
-                ? `http://localhost:5000/uploads/${employee.photo}`
-                : "/default-photo.png"
+              photoFileName
+                ? `http://localhost:5000/uploads/${photoFileName}`  
+                : defaultImage
             }
             alt="Employee"
             width="50"

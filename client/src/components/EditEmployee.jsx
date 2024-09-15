@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const EditEmployee = () => {
   const { id } = useParams();
@@ -59,15 +60,15 @@ const EditEmployee = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      alert('Employee updated successfully!');
-      navigate('/');  // Redirect back to employee list after update
+      toast.success('Employee updated successfully');
+      navigate('/');  
     } catch (error) {
       console.error('Error updating employee:', error);
-      alert('Failed to update employee.');
+      toast.error('Error updating employee');
     }
   };
 
-  // If loading, show a loading message
+
   if (loading) {
     return <div className="container mt-4">Loading employee data...</div>;
   }

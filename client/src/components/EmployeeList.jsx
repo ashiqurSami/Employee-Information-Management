@@ -107,8 +107,8 @@ const EmployeeList = () => {
         </tbody>
       </table>
 
-      <div className="d-flex justify-content-between align-items-center mt-4">
-        <div className="col-md-2">
+      <div className="d-flex justify-content-between align-items-center mt-4 mb-4">
+        <div className="col-md-2 ">
           <label htmlFor="limit" className="form-label">Records per page</label>
           <input
             type="number"
